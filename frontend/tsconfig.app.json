@@ -1,0 +1,17 @@
+{
+  "include": ["src"],
+  "exclude": ["src/**/*.spec.tsx"],
+  "extends": ["@tsconfig/vite-react/tsconfig"],
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

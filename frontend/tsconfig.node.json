@@ -1,0 +1,13 @@
+{
+  "include": ["vite.config.ts", "eslint.config.mts"],
+  "extends": ["@tsconfig/vite-react/tsconfig"],
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "noEmit": true
+  },
+}
