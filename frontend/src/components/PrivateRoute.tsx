@@ -3,6 +3,7 @@ import {Loader2} from "lucide-react";
 import {useState, useEffect} from "react";
 import {Navigate, Outlet} from "react-router";
 
+import {useRoleStore} from "@/store";
 import {supabase} from "@/supabaseClient";
 import routes from "@/utils/routes";
 
@@ -10,11 +11,25 @@ export function PrivateRoute() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const setRole = useRoleStore(state => state.setRole);
+
   useEffect(() => {
     const checkSession = async () => {
       try {
         const {data: {session: currentSession}} = await supabase.auth.getSession();
         setSession(currentSession);
+
+        const {data} = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", currentSession?.user.id)
+          .single();
+
+        const role = typeof data?.role === "string" ? data.role : undefined;
+
+        if (role) {
+          setRole(role);
+        }
       } catch (error) {
         console.error("Acesso não autorizado.:", error);
       } finally {
@@ -31,7 +46,7 @@ export function PrivateRoute() {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [setRole]);
 
   if (loading) {
     return (
