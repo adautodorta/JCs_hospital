@@ -36,6 +36,12 @@ export function Register() {
         = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
+          options: {
+            data: {
+              name: data.name,
+              role: "patient",
+            },
+          },
         });
 
       if (signUpError) {

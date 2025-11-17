@@ -1,7 +1,23 @@
+import {AdminDashboard} from "./Admin/Admin";
+import {DoctorDashboard} from "./Doctor/Doctor";
+import {PatientDashboard} from "./Patient/Patient";
+import {ReceptionistDashboard} from "./Receptionist/Receptionist";
+
+import {useRoleStore} from "@/store";
+
 export const Dashboard = () => {
-  return (
-    <div>
-      Dashboard
-    </div>
-  );
+  const role = useRoleStore(state => state.role);
+
+  switch (role) {
+    case "patient":
+      return <PatientDashboard />;
+    case "doctor":
+      return <DoctorDashboard />;
+    case "receptionist":
+      return <ReceptionistDashboard />;
+    case "admin":
+      return <AdminDashboard />;
+    default:
+      return <PatientDashboard />;
+  }
 };
