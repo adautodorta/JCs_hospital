@@ -1,8 +1,5 @@
-flask
-flasgger
-flask_restful
-gunicorn
+fastapi
+uvicorn[standard]
 supabase
 python-dotenv
-PyJWT
-Flask-Cors
+pydantic-settings
