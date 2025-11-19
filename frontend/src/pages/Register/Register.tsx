@@ -1,4 +1,5 @@
 import {useMutation} from "@tanstack/react-query";
+import {InfoIcon} from "lucide-react";
 import {useState} from "react";
 import {useNavigate, Link} from "react-router";
 import {toast} from "sonner";
@@ -8,7 +9,10 @@ import LogoHospital from "./../../assets/LOGO JCS.webp";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Spinner} from "@/components/ui/spinner";
+import {Switch} from "@/components/ui/switch";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {supabase} from "@/supabaseClient";
 import {formatCPF} from "@/utils/functions";
 import routes from "@/utils/routes";
@@ -16,9 +20,16 @@ import routes from "@/utils/routes";
 export function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+
+  const [fullName, setFullName] = useState("");
   const [cpf, setCPF] = useState("");
-  const [birthDate, setBirthDate] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [gender, setGender] = useState("");
+  const [momFullName, setMomFullName] = useState("");
+  const [address, setAddress] = useState("");
+  const [nationality, setNationality] = useState("");
+  const [isPriority, setIsPriority] = useState(false);
+
   const navigate = useNavigate();
 
   const {
@@ -28,9 +39,14 @@ export function Register() {
     mutationFn: async (data: {
       email: string;
       password: string;
-      name: string;
+      fullName: string;
       cpf: string;
-      birth_date: string;
+      dateOfBirth: string;
+      gender: string;
+      momFullName: string;
+      address: string;
+      nationality: string;
+      isPriority: boolean;
     }) => {
       const {data: signUpData, error: signUpError} = await supabase.auth.signUp({
         email: data.email,
@@ -48,11 +64,15 @@ export function Register() {
 
       const {error: profileError} = await supabase.from("PROFILES").insert({
         id: userId,
-        name: data.name,
-        role: "patient",
+        full_name: data.fullName,
         document_number: data.cpf,
-        date_of_birth: data.birth_date,
-        priority: false,
+        date_of_birth: data.dateOfBirth,
+        gender: data.gender,
+        mom_full_name: data.momFullName,
+        address: data.address,
+        nationality: data.nationality,
+        priority: data.isPriority,
+        role: "patient",
       });
 
       if (profileError) {
@@ -79,17 +99,20 @@ export function Register() {
     registerMutate({
       email,
       password,
-      name,
+      fullName,
       cpf,
-      birth_date: birthDate,
+      dateOfBirth,
+      gender,
+      momFullName,
+      address,
+      nationality,
+      isPriority,
     });
   };
 
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const digits = e.target.value.replace(/\D/g, "");
-
     const limitedDigits = digits.slice(0, 11);
-
     setCPF(limitedDigits);
   };
 
@@ -104,14 +127,14 @@ export function Register() {
         <form onSubmit={handleSubmit} className="flex flex-col w-full gap-4">
 
           <div className="grid gap-2">
-            <Label htmlFor="name">Nome completo</Label>
+            <Label htmlFor="fullName">Nome completo</Label>
             <Input
-              id="name"
+              id="fullName"
               placeholder="Insira seu nome completo"
-              value={name}
+              value={fullName}
               required
               onChange={(e) => {
-                setName(e.target.value);
+                setFullName(e.target.value);
               }}
               disabled={isRegisterPending}
             />
@@ -131,14 +154,74 @@ export function Register() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="birthDate">Data de nascimento</Label>
+            <Label htmlFor="dateOfBirth">Data de nascimento</Label>
             <Input
-              id="birthDate"
+              id="dateOfBirth"
               type="date"
-              value={birthDate}
+              value={dateOfBirth}
               required
               onChange={(e) => {
-                setBirthDate(e.target.value);
+                setDateOfBirth(e.target.value);
+              }}
+              disabled={isRegisterPending}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="gender">Gênero</Label>
+            <Select
+              onValueChange={setGender}
+              value={gender}
+              disabled={isRegisterPending}
+              required
+            >
+              <SelectTrigger id="gender">
+                <SelectValue placeholder="Selecione o gênero" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="M">Masculino</SelectItem>
+                <SelectItem value="F">Feminino</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="momFullName">Nome completo da Mãe</Label>
+            <Input
+              id="momFullName"
+              placeholder="Insira o nome completo da mãe"
+              value={momFullName}
+              required
+              onChange={(e) => {
+                setMomFullName(e.target.value);
+              }}
+              disabled={isRegisterPending}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="address">Endereço</Label>
+            <Input
+              id="address"
+              placeholder="Rua, número, bairro, cidade, estado."
+              value={address}
+              required
+              onChange={(e) => {
+                setAddress(e.target.value);
+              }}
+              disabled={isRegisterPending}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="nationality">Nacionalidade</Label>
+            <Input
+              id="nationality"
+              placeholder="Ex: Brasileira"
+              value={nationality}
+              required
+              onChange={(e) => {
+                setNationality(e.target.value);
               }}
               disabled={isRegisterPending}
             />
@@ -171,6 +254,45 @@ export function Register() {
                 setPassword(e.target.value);
               }}
               disabled={isRegisterPending}
+            />
+          </div>
+
+          <div className="flex items-center justify-between mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1">
+                <Label htmlFor="isPriority" className="font-semibold text-base">
+                  Atendimento Prioritário
+                </Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <InfoIcon className="w-4 h-4 text-primary cursor-pointer" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs text-sm">
+                    <p className="font-bold mb-1">Requisitos de Prioridade (Lei nº 10.048/2000):</p>
+                    <ul className="list-disc list-inside space-y-0.5">
+                      <li>Pessoas com idade igual ou superior a **60 (sessenta) anos**.</li>
+                      <li>Pessoas com **deficiência**.</li>
+                      <li>**Gestantes**.</li>
+                      <li>**Lactantes** (amamentando).</li>
+                      <li>Pessoas com crianças de colo.</li>
+                      <li>Pessoas com **TEA** (Transtorno do Espectro Autista).</li>
+                    </ul>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Ao ativar, você confirma se enquadrar em um dos requisitos acima.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Ative se você se enquadra nos requisitos legais.
+              </p>
+            </div>
+            <Switch
+              id="isPriority"
+              checked={isPriority}
+              onCheckedChange={setIsPriority}
+              disabled={isRegisterPending}
+              aria-label="Atendimento Prioritário"
             />
           </div>
 
