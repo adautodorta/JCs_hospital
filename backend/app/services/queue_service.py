@@ -62,7 +62,7 @@ class QueueService:
 
         return position + 1
     
-    def advance_queue(self):
+    def advance_queue(self, doctor_id: str):
         queue_response = self.table.select("*").execute()
         queue = queue_response.data
 
@@ -92,10 +92,21 @@ class QueueService:
 
         ordered_queue = priorities + normals
 
+        # primeiro da fila
         first = ordered_queue[0]
-        first_id = first["id"]
+        patient_id = first["profile_id"]
 
-        delete_res = self.table.delete().eq("id", first_id).execute()
+        # remove da fila
+        self.table.delete().eq("id", first["id"]).execute()
+
+        # cria current attendance
+        now = datetime.now(ZoneInfo("America/Fortaleza")).isoformat()
+
+        supabase.table("CURRENT_ATTENDANCE").insert({
+            "doctor_id": doctor_id,
+            "patient_id": patient_id,
+            "started_at": now
+        }).execute()
 
         return first
         
