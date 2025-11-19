@@ -32,17 +32,10 @@ export function Register() {
       cpf: string;
       birth_date: string;
     }) => {
-      const {data: signUpData, error: signUpError}
-        = await supabase.auth.signUp({
-          email: data.email,
-          password: data.password,
-          options: {
-            data: {
-              name: data.name,
-              role: "patient",
-            },
-          },
-        });
+      const {data: signUpData, error: signUpError} = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+      });
 
       if (signUpError) {
         throw new Error(signUpError.message);
@@ -53,19 +46,18 @@ export function Register() {
 
       const userId = signUpData.user.id;
 
-      const {error: patientError} = await supabase
-        .from("patients")
-        .insert({
-          id: crypto.randomUUID(),
-          user_id: userId,
-          cpf: data.cpf,
-          date_of_birth: data.birth_date,
-          number_phone: "",
-        });
+      const {error: profileError} = await supabase.from("PROFILES").insert({
+        id: userId,
+        name: data.name,
+        role: "patient",
+        document_number: data.cpf,
+        date_of_birth: data.birth_date,
+        priority: false,
+      });
 
-      if (patientError) {
-        console.error(patientError);
-        throw new Error(patientError.message);
+      if (profileError) {
+        console.error(profileError);
+        throw new Error(profileError.message);
       }
 
       return true;
