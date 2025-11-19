@@ -59,9 +59,9 @@ def get_my_position(user_id: str = Depends(get_current_user)):
         )
     
 @router.post("/next")
-def call_next(user_id: str = Depends(get_current_user)):
+def call_next(doctor_id: str = Depends(get_current_user)):
     try:
-        called = queue_service.advance_queue()
+        called = queue_service.advance_queue(doctor_id)
 
         if not called:
             return {"message": "A fila está vazia."}
