@@ -19,8 +19,13 @@ export function PrivateRoute() {
         const {data: {session: currentSession}} = await supabase.auth.getSession();
         setSession(currentSession);
 
+        const accessToken = currentSession?.access_token;
+        if (accessToken) {
+          localStorage.setItem("access_token", accessToken);
+        }
+
         const {data} = await supabase
-          .from("profiles")
+          .from("PROFILES")
           .select("role")
           .eq("id", currentSession?.user.id)
           .single();
@@ -41,6 +46,12 @@ export function PrivateRoute() {
 
     const {data: {subscription}} = supabase.auth.onAuthStateChange((_event, updatedSession) => {
       setSession(updatedSession);
+      const t = updatedSession?.access_token;
+      if (t) {
+        localStorage.setItem("access_token", t);
+      } else {
+        localStorage.removeItem("access_token");
+      }
     });
 
     return () => {
