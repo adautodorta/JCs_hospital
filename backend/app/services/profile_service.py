@@ -6,7 +6,16 @@ class ProfileService:
 
     def get_all_profiles(self):
         response = self.table.select("*").execute()
-        
         return response.data
+    
+    def get_profile(self, profile_id: str):
+        response = (
+            self.table
+            .select("*")
+            .eq("id", profile_id)
+            .execute()
+        )
+
+        return response.data[0] if response.data else None
         
 profile_service = ProfileService()

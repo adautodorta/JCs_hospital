@@ -14,3 +14,22 @@ def get_all_profiles_endpoint():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
+    
+@router.get("/me")
+def get_my_profile(user_id: str = Depends(get_current_user)):
+    try:
+        profile = profile_service.get_profile(user_id)
+
+        if not profile:
+            raise HTTPException(
+                status_code=404,
+                detail="Profile not found"
+            )
+
+        return profile
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
