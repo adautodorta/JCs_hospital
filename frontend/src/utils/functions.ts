@@ -39,3 +39,45 @@ export const formatCPF = (d: string): string => {
   }
   return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9, 11)}`;
 };
+
+export const formatDateToBR = (dateString: string): string => {
+  if (!dateString) {
+    return "-";
+  }
+
+  const parts = dateString.split("-");
+
+  if (parts.length !== 3) {
+    return dateString;
+  }
+
+  const [year, month, day] = parts;
+
+  return `${day}/${month}/${year}`;
+};
+
+export const getFirstTwoNames = (fullName: string): string => {
+  if (!fullName || fullName.trim() === "") {
+    return "";
+  }
+
+  const names = fullName.trim().split(/\s+/);
+
+  const firstTwoNames = names.slice(0, 2);
+
+  return firstTwoNames.join(" ");
+};
+
+export function formatDateTime(dateString: string): string {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    return "";
+  }
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date).replace(",", " às");
+}
