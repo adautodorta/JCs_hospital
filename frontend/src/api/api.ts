@@ -26,7 +26,6 @@ interface GetPositionQueueProps {
 
 async function apiFetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
   const token = localStorage.getItem("access_token");
-  console.log("seu token", token);
 
   const headers = new Headers(init?.headers ?? {});
   headers.set("Content-Type", headers.get("Content-Type") ?? "application/json");
