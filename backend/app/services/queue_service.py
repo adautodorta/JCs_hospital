@@ -32,14 +32,12 @@ class QueueService:
 
         user_entry = next((item for item in queue if item["profile_id"] == profile_id), None)
         if not user_entry:
-            return "called"
+            return None
 
         profile = supabase.table("PROFILES").select("*").eq("id", profile_id).execute().data
 
         if not profile:
             raise ValueError("Perfil não encontrado.")
-
-        user_priority = profile[0].get("priority", False)
 
         priorities = []
         normals = []
@@ -58,9 +56,27 @@ class QueueService:
 
         ordered_queue = priorities + normals
 
-        position = next((i for i, item in enumerate(ordered_queue) if item["profile_id"] == profile_id), None)
+        position = next(
+            (i for i, item in enumerate(ordered_queue) if item["profile_id"] == profile_id),
+            None
+        )
+
+        if position is None:
+            return None
 
         return position + 1
+
+    
+    def is_being_attended(self, profile_id: str):
+        response = (
+            supabase.table("CURRENT_ATTENDANCE")
+            .select("*")
+            .eq("patient_id", profile_id)
+            .execute()
+            .data
+        )
+
+        return len(response) > 0
     
     def advance_queue(self, doctor_id: str):
         queue_response = self.table.select("*").execute()

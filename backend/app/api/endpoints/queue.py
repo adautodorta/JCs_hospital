@@ -47,13 +47,13 @@ def get_my_position(user_id: str = Depends(get_current_user)):
     try:
         position = queue_service.get_position(user_id)
 
-        if queue_service.current_attendance and queue_service.current_attendance.user_id == user_id:
+        if position is not None:
+            return {"status": "waiting", "position": position}
+
+        if queue_service.is_being_attended(user_id):
             return {"status": "called"}
-        
-        if position is None:
-            return {"status": "not_in_queue"}
-        
-        return {"status": "waiting", "position": position}
+
+        return {"status": "not_in_queue"}
 
     except Exception as e:
         raise HTTPException(
