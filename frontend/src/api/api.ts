@@ -19,9 +19,21 @@ interface CheckinQueueProps {
   profile_id?: string;
 }
 
-interface GetPositionQueueProps {
+export interface GetPositionQueueProps {
   position?: number;
   status?: string;
+}
+
+export interface RecordsSummaryProps {
+  id: number;
+  doctor_id: string;
+  patient_id: string;
+  started_at: string;
+  end_at: string;
+  subjective: string;
+  objective_data: string;
+  assessment: string;
+  planning: string;
 }
 
 async function apiFetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
@@ -84,5 +96,15 @@ export const QueueAPI = {
       method: "GET",
     });
     return response.json() as GetPositionQueueProps;
+  },
+};
+
+export const RecordsAPI = {
+  getRecordsMe: async (): Promise<RecordsSummaryProps[]> => {
+    const response = await apiFetch(`${config.baseUrl}/records/me`, {
+      method: "GET",
+    });
+
+    return (await response.json()) as RecordsSummaryProps[];
   },
 };
