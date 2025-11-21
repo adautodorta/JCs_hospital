@@ -18,7 +18,6 @@ interface Profile {
   email: string | null;
   name?: string | null;
   role?: string | null;
-  created_at?: string;
 }
 
 export const AdminDashboard: React.FC = () => {
@@ -37,7 +36,7 @@ export const AdminDashboard: React.FC = () => {
   const loadProfiles = useCallback(async () => {
     try {
       setLoading(true);
-      let query = supabase.from("profiles").select("*");
+      let query = supabase.from("PROFILES").select("*");
 
       if (roleFilter) {
         query = query.eq("role", roleFilter);
@@ -255,9 +254,6 @@ export const AdminDashboard: React.FC = () => {
                             </SelectContent>
                           </Select>
                         </TableCell>
-
-                        <TableCell>{p.created_at ? new Date(p.created_at).toLocaleString() : "-"}</TableCell>
-
                       </TableRow>
                     );
                   })
