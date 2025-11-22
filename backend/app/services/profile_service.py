@@ -11,7 +11,7 @@ class ProfileService:
     def get_profile(self, profile_id: str):
         if not profile_id:
             raise ValueError("profile_id is required")
-        
+
         response = (
             self.table
             .select("*")
@@ -20,12 +20,7 @@ class ProfileService:
             .execute()
         )
 
-        if response.error:
-            if "No rows" in response.error.message:
-                return None
-
-            raise Exception(response.error.message)
-
         return response.data
+
         
 profile_service = ProfileService()
