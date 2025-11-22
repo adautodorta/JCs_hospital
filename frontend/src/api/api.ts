@@ -1,6 +1,6 @@
 import config from "@/utils/config";
 
-interface ProfilesSummary {
+export interface ProfilesSummary {
   id: string;
   full_name: string;
   role: string;
@@ -125,6 +125,14 @@ export const RecordsAPI = {
 
   getRecordsMe: async (): Promise<RecordsSummaryProps[]> => {
     const response = await apiFetch(`${config.baseUrl}/records/me`, {
+      method: "GET",
+    });
+
+    return (await response.json()) as RecordsSummaryProps[];
+  },
+
+  getRecordsByPatientId: async (patientId: string): Promise<RecordsSummaryProps[]> => {
+    const response = await apiFetch(`${config.baseUrl}/records/patient/${patientId}`, {
       method: "GET",
     });
 
