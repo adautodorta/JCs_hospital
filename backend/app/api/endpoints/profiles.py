@@ -33,3 +33,16 @@ def get_my_profile(user_id: str = Depends(get_current_user)):
             status_code=500,
             detail=str(e)
         )
+    
+@router.get("/{profile_id}")
+def get_profile_by_id(profile_id: str):
+    try:
+        profile = profile_service.get_profile(profile_id)
+
+        if not profile:
+            raise HTTPException(status_code=404, detail="Profile not found")
+
+        return profile
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
