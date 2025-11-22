@@ -10,12 +10,19 @@ def list_all_records():
     service = MedicalRecordService()
     return service.list_all()
 
-
 @router.get("/me")
 def list_my_records(user_id: str = Depends(get_current_user)):
     service = MedicalRecordService()
     return service.list_by_profile(user_id)
 
+@router.get("/by_patient/{patient_id}")
+def list_records_by_patient(patient_id: str):
+    service = MedicalRecordService()
+    try:
+        records = service.list_by_profile(patient_id)
+        return records
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{record_id}")
 def get_record(record_id: str):
