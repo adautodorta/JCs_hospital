@@ -3,6 +3,8 @@ import {DoctorDashboard} from "./Doctor/Doctor";
 import {PatientDashboard} from "./Patient/Patient";
 import {ReceptionistDashboard} from "./Receptionist/Receptionist";
 
+import {AppSidebar} from "@/components/custom/AppSidebar";
+import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 import {useRoleStore} from "@/store";
 
 export const Dashboard = () => {
@@ -12,7 +14,15 @@ export const Dashboard = () => {
     case "patient":
       return <PatientDashboard />;
     case "doctor":
-      return <DoctorDashboard />;
+      return (
+        <SidebarProvider>
+          <AppSidebar />
+          <main className="w-full">
+            <SidebarTrigger />
+            <DoctorDashboard />
+          </main>
+        </SidebarProvider>
+      );
     case "receptionist":
       return <ReceptionistDashboard />;
     case "admin":

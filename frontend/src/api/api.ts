@@ -68,15 +68,31 @@ export const ProfilesAPI = {
   },
 
   getAllProfiles: async (): Promise<ProfilesSummary[]> => {
-    const response = await apiFetch(`${config.baseUrl}/profiles`, {
+    const response = await apiFetch(`${config.baseUrl}/profiles/`, {
       method: "GET",
     });
 
     return (await response.json()) as ProfilesSummary[];
   },
+
+  getProfileById: async (profileId: string): Promise<ProfilesSummary> => {
+    const response = await apiFetch(`${config.baseUrl}/profiles/${profileId}`, {
+      method: "GET",
+    });
+
+    return (await response.json()) as ProfilesSummary;
+  },
 };
 
 export const QueueAPI = {
+  getAllQueue: async (): Promise<CheckinQueueProps[]> => {
+    const response = await apiFetch(`${config.baseUrl}/queue/`, {
+      method: "GET",
+    });
+
+    return (await response.json()) as CheckinQueueProps[];
+  },
+
   checkIn: async (): Promise<CheckinQueueProps> => {
     const response = await apiFetch(`${config.baseUrl}/queue/checkin`, {
       method: "POST",
@@ -100,6 +116,13 @@ export const QueueAPI = {
 };
 
 export const RecordsAPI = {
+  getAllRecords: async (): Promise<RecordsSummaryProps[]> => {
+    const response = await apiFetch(`${config.baseUrl}/records/`, {
+      method: "GET",
+    });
+    return (await response.json()) as RecordsSummaryProps[];
+  },
+
   getRecordsMe: async (): Promise<RecordsSummaryProps[]> => {
     const response = await apiFetch(`${config.baseUrl}/records/me`, {
       method: "GET",
