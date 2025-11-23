@@ -1,8 +1,10 @@
 import {
   LayoutDashboard,
+  LogOut,
   Users,
 } from "lucide-react";
 
+import {Button} from "../ui/button";
 import IconLogo from "./../../assets/icon.png";
 
 import {
@@ -14,6 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import {supabase} from "@/supabaseClient";
 
 const items = [
   {
@@ -65,6 +68,15 @@ export function AppSidebar() {
                   </SidebarMenuItem>
                 );
               })}
+              <Button
+                className="w-full justify-start gap-2 transition-all"
+                variant="ghost"
+                size="default"
+                onClick={() => void supabase.auth.signOut()}
+              >
+                <LogOut />
+                Sair
+              </Button>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

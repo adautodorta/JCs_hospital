@@ -1,14 +1,19 @@
 import {useQuery} from "@tanstack/react-query";
+import {useNavigate} from "react-router";
 
 import {CardInfoGlobal} from "./Components/CardInfoGlobal";
 import {CardQueue} from "./Components/CardQueue";
 
 import {ProfilesAPI, QueueAPI, RecordsAPI} from "@/api/api";
+import {Button} from "@/components/ui/button";
 import {Separator} from "@/components/ui/separator";
 import {Spinner} from "@/components/ui/spinner";
 import {getFirstTwoNames} from "@/utils/functions";
+import routes from "@/utils/routes";
 
 export const DoctorDashboard = () => {
+  const navigate = useNavigate();
+
   const {data, isPending} = useQuery({
     queryKey: ["info-doctor"],
     queryFn: ProfilesAPI.getInfoMe,
@@ -69,15 +74,15 @@ export const DoctorDashboard = () => {
             )
           : (
               <div className="w-full">
-                <h2 className="text-2xl font-medium mb-4">
+                <h2 className="text-2xl font-medium">
                   {verifyGender(data?.gender ?? "")}
                   {getFirstTwoNames(data?.full_name ?? "")}
                   .
                 </h2>
 
-                <Separator />
+                <Separator className="mt-5 mb-5" />
 
-                <div className="pt-5 mb-2">
+                <div className="mb-3">
                   <h2 className="text-base font-normal leading-none text-muted-foreground">
                     Visão Geral
                   </h2>
@@ -105,6 +110,17 @@ export const DoctorDashboard = () => {
                     iconBgColor="bg-purple-100"
                     iconTextColor="text-purple-600"
                   />
+                </div>
+
+                <Separator className="mt-5 mb-5" />
+
+                <div className="mb-3 flex flex-row justify-between items-center">
+                  <h2 className="text-base font-normal leading-none text-muted-foreground">
+                    Pacientes na Fila
+                  </h2>
+                  <Button disabled={!patientsWaiting[0]?.id} onClick={() => void navigate(routes.ATTENDANCE.replace(":attendanceId", patientsWaiting[0]?.id ?? ""))}>
+                    Iniciar atendimento
+                  </Button>
                 </div>
 
                 <CardQueue queue={patientsWaiting} profiles={patients} />

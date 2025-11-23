@@ -1,11 +1,14 @@
 import {useQuery} from "@tanstack/react-query";
+import {LogOut} from "lucide-react";
 
 import {CheckinSection} from "./components/CheckinSection";
 import {RecordsList} from "./components/RecordsList";
 import {CardInfoPatient} from "../../../components/custom/CardInfoPatient";
 
 import {ProfilesAPI} from "@/api/api";
+import {Button} from "@/components/ui/button";
 import {Separator} from "@/components/ui/separator";
+import {supabase} from "@/supabaseClient";
 import {getFirstTwoNames} from "@/utils/functions";
 
 export const PatientDashboard = () => {
@@ -27,6 +30,10 @@ export const PatientDashboard = () => {
         <CardInfoPatient data={data} isPending={isPending} />
         <Separator className="mb-5 mt-5" />
         <RecordsList />
+        <Button className="cursor-pointer w-full mt-7 mb-42" variant="destructive" size="sm" onClick={() => void supabase.auth.signOut()}>
+          <LogOut />
+          Sair
+        </Button>
       </div>
     </div>
   );
