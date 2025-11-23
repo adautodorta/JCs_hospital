@@ -21,7 +21,7 @@ export const CardInfoPatient = ({data, isPending}: CardInfoPatientProps) => {
   };
 
   return (
-    <div className="w-full mb-24">
+    <div className="w-full">
       <Card className="w-full mt-2 rounded-xl shadow-sm border border-border/50 bg-card text-card-foreground gap-3">
         <CardHeader className="flex flex-row items-center gap-3">
           <User className="h-6 w-6 text-blue-600" />
