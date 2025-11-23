@@ -47,14 +47,11 @@ def get_my_position(user_id: str = Depends(get_current_user)):
     try:
         position = queue_service.get_position(user_id)
 
-        if position == "assigned":
-            return {"status": "called"}
-
-        if isinstance(position, int):
+        if position is not None:
             return {"status": "waiting", "position": position}
 
         if queue_service.is_being_attended(user_id):
-            return {"status": "being_attended"}
+            return {"status": "called"}
 
         return {"status": "not_in_queue"}
 
