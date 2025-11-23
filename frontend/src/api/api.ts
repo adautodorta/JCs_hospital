@@ -36,6 +36,13 @@ export interface RecordsSummaryProps {
   planning: string;
 }
 
+// interface AttendanceRecordPayload {
+//   subjective: string;
+//   objective_data: string;
+//   assessment: string;
+//   planning: string;
+// }
+
 async function apiFetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
   const token = localStorage.getItem("access_token");
 
@@ -113,7 +120,42 @@ export const QueueAPI = {
     });
     return response.json() as GetPositionQueueProps;
   },
+
+  callNext: async (): Promise<CheckinQueueProps> => {
+    const response = await apiFetch(`${config.baseUrl}/queue/next`, {
+      method: "POST",
+    });
+
+    return response.json() as CheckinQueueProps;
+  },
 };
+
+// export const AttendanceAPI = {
+//   getCurrent: async () => {
+//     const response = await apiFetch(`${config.baseUrl}/attendance/current`, {
+//       method: "GET",
+//     });
+//     return response.json();
+//   },
+
+//   start: async (queueId: string) => {
+//     const response = await apiFetch(`${config.baseUrl}/attendance/start`, {
+//       method: "POST",
+//       body: JSON.stringify({queue_id: queueId}),
+//     });
+
+//     return response.json();
+//   },
+
+//   finish: async (data: AttendanceRecordPayload) => {
+//     const response = await apiFetch(`${config.baseUrl}/attendance/finish`, {
+//       method: "POST",
+//       body: JSON.stringify(data),
+//     });
+
+//     return response.json();
+//   },
+// };
 
 export const RecordsAPI = {
   getAllRecords: async (): Promise<RecordsSummaryProps[]> => {
@@ -132,7 +174,7 @@ export const RecordsAPI = {
   },
 
   getRecordsByPatientId: async (patientId: string): Promise<RecordsSummaryProps[]> => {
-    const response = await apiFetch(`${config.baseUrl}/records/patient/${patientId}`, {
+    const response = await apiFetch(`${config.baseUrl}/records/by_patient/${patientId}`, {
       method: "GET",
     });
 

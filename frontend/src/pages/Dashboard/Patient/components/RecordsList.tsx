@@ -33,7 +33,7 @@ export const RecordsList = () => {
   );
 
   return (
-    <div className="w-full mt-4 mb-42">
+    <div className="w-full mt-4">
       <div className="mb-4">
         <h2 className="text-base font-normal leading-none text-muted-foreground">
           Últimos atendimentos

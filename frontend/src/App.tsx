@@ -2,6 +2,7 @@ import {Navigate, Route, Routes} from "react-router";
 import {Toaster} from "sonner";
 
 import {PrivateRoute} from "./components/PrivateRoute";
+import {Attendance} from "./pages/Attendance/Attendance";
 import {Dashboard} from "./pages/Dashboard/Dashboard";
 import {Login} from "./pages/Login/Login";
 import {PatientResume} from "./pages/PatientResume/PatientResume";
@@ -20,6 +21,7 @@ function App() {
           <Route path={routes.DASHBOARD} element={<Dashboard />} />
           <Route path={routes.PATIENTS} element={<Patients />} />
           <Route path={routes.PATIENT} element={<PatientResume />} />
+          <Route path={routes.ATTENDANCE} element={<Attendance />} />
         </Route>
         <Route path="*" element={<Navigate to={routes.LOGIN} replace />} />
       </Routes>

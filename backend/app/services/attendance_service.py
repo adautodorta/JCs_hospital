@@ -7,6 +7,7 @@ class AttendanceService:
     def __init__(self):
         self.current = supabase.table("CURRENT_ATTENDANCE")
         self.records = supabase.table("RECORD_MEDICAL")
+        self.queue = supabase.table("QUEUE")
 
     def get_current_attendance(self, doctor_id: str):
         response = (
@@ -28,7 +29,6 @@ class AttendanceService:
         }
 
         response = self.current.insert(insert_data).execute()
-
         return response.data[0]
 
     def finish_attendance(
@@ -57,11 +57,10 @@ class AttendanceService:
             "planning": planning,
         }
 
-        create_record = self.records.insert(record_data).execute()
-
+        record = self.records.insert(record_data).execute().data[0]
+        self.queue.delete().eq("profile_id", current["patient_id"]).execute()
         self.current.delete().eq("doctor_id", doctor_id).execute()
-
-        return create_record.data[0]
+        return record
 
 
 attendance_service = AttendanceService()
