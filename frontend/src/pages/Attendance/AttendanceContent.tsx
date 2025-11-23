@@ -8,8 +8,10 @@ import {
   FileText,
 } from "lucide-react";
 import {useState} from "react";
+import {useParams} from "react-router";
 import {toast} from "sonner";
 
+import {AttendanceAPI} from "@/api/api";
 import {Button} from "@/components/ui/button";
 import {
   Card,
@@ -21,52 +23,49 @@ import {
 import {Label} from "@/components/ui/label";
 import {Spinner} from "@/components/ui/spinner";
 import {Textarea} from "@/components/ui/textarea";
-import {supabase} from "@/supabaseClient";
 
 export const AttendanceContent = () => {
-  const [subjective, setSubjective] = useState("");
-  const [physicalExam, setPhysicalExam] = useState("");
-  const [assessment, setAssessment] = useState("");
-  const [plan, setPlan] = useState("");
+  const {attendanceId} = useParams<{attendanceId: string}>();
 
-  const {mutate: saveRecordMutate, isPending: isSaving} = useMutation({
+  const [subjective, setSubjective] = useState("");
+  const [objective, setObjective] = useState("");
+  const [assessment, setAssessment] = useState("");
+  const [planning, setPlanning] = useState("");
+
+  const {mutate: finishMutate, isPending} = useMutation({
     mutationFn: async (data: {
       subjective: string;
-      objective: string;
+      objective_data: string;
       assessment: string;
-      plan: string;
+      planning: string;
     }) => {
-      const {error} = await supabase.from("medical_records").insert({
-        subjective: data.subjective,
-        objective_data: data.objective,
-        assessment: data.assessment,
-        plan: data.plan,
-        created_at: new Date(),
-      });
-
-      if (error) {
-        throw new Error(error.message);
+      if (!attendanceId) {
+        throw new Error("attendanceId não encontrado na URL.");
       }
 
-      return true;
+      return AttendanceAPI.finish(attendanceId, data);
     },
+
     onSuccess: () => {
-      toast.success("Prontuário salvo com sucesso!");
+      toast.success("Atendimento finalizado com sucesso!");
+      setSubjective("");
+      setObjective("");
+      setAssessment("");
+      setPlanning("");
     },
-    onError: (err) => {
-      console.error("Erro ao salvar (Simulação):", err);
-      toast.error("Erro ao salvar prontuário. Verifique o console.");
+    onError: () => {
+      toast.error("Erro ao finalizar atendimento.");
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    saveRecordMutate({
+    finishMutate({
       subjective,
-      objective: physicalExam,
+      objective_data: objective,
       assessment,
-      plan,
+      planning,
     });
   };
 
@@ -83,8 +82,8 @@ export const AttendanceContent = () => {
               Preencha os dados seguindo o modelo SOAP.
             </p>
           </div>
-          <Button disabled={isSaving} onClick={handleSubmit} className="mt-4">
-            {isSaving
+          <Button disabled={isPending} onClick={handleSubmit} className="mt-4">
+            {isPending
               ? (
                   <>
                     <Spinner className="mr-2" />
@@ -124,7 +123,7 @@ export const AttendanceContent = () => {
                   onChange={(e) => {
                     setSubjective(e.target.value);
                   }}
-                  disabled={isSaving}
+                  disabled={isPending}
                 />
               </div>
             </CardContent>
@@ -142,16 +141,16 @@ export const AttendanceContent = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-2">
-                <Label htmlFor="physicalExam">Exame Físico Geral/Específico</Label>
+                <Label htmlFor="objective">Exame Físico Geral/Específico</Label>
                 <Textarea
-                  id="physicalExam"
+                  id="objective"
                   placeholder="Estado geral, ausculta, palpação, inspeção..."
                   className="min-h-[100px]"
-                  value={physicalExam}
+                  value={objective}
                   onChange={(e) => {
-                    setPhysicalExam(e.target.value);
+                    setObjective(e.target.value);
                   }}
-                  disabled={isSaving}
+                  disabled={isPending}
                 />
               </div>
             </CardContent>
@@ -178,7 +177,7 @@ export const AttendanceContent = () => {
                   onChange={(e) => {
                     setAssessment(e.target.value);
                   }}
-                  disabled={isSaving}
+                  disabled={isPending}
                 />
               </div>
             </CardContent>
@@ -196,24 +195,24 @@ export const AttendanceContent = () => {
             </CardHeader>
             <CardContent>
               <div className="grid gap-2">
-                <Label htmlFor="plan">Conduta Terapêutica</Label>
+                <Label htmlFor="planning">Conduta Terapêutica</Label>
                 <Textarea
-                  id="plan"
+                  id="planning"
                   placeholder="Medicamentos prescritos, encaminhamentos, retorno..."
                   className="min-h-[120px]"
-                  value={plan}
+                  value={planning}
                   onChange={(e) => {
-                    setPlan(e.target.value);
+                    setPlanning(e.target.value);
                   }}
-                  disabled={isSaving}
+                  disabled={isPending}
                 />
               </div>
             </CardContent>
           </Card>
 
           <div className="flex justify-end gap-4 pt-4">
-            <Button type="submit" disabled={isSaving} className="mb-24">
-              {isSaving ? <Spinner /> : "Finalizar Atendimento"}
+            <Button type="submit" disabled={isPending} className="mb-24">
+              {isPending ? <Spinner /> : "Finalizar Atendimento"}
             </Button>
           </div>
         </form>

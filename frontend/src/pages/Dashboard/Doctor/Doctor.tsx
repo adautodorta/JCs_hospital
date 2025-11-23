@@ -1,4 +1,4 @@
-import {useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import {useNavigate} from "react-router";
 
 import {CardInfoGlobal} from "./Components/CardInfoGlobal";
@@ -35,6 +35,22 @@ export const DoctorDashboard = () => {
     queryKey: ["all-records"],
     queryFn: RecordsAPI.getAllRecords,
     refetchInterval: 60000,
+  });
+
+  const {mutate: callNextMutate, isPending: isCallingNext} = useMutation({
+    mutationFn: QueueAPI.callNext,
+    onSuccess: (resp) => {
+      const attendanceId = resp.called?.id;
+
+      if (!attendanceId) {
+        console.error("Erro: id do atendimento não veio na resposta");
+        return;
+      }
+
+      void navigate(
+        routes.ATTENDANCE.replace(":attendanceId", attendanceId),
+      );
+    },
   });
 
   const patients = allProfiles?.filter(p => p.role === "patient") ?? [];
@@ -118,8 +134,13 @@ export const DoctorDashboard = () => {
                   <h2 className="text-base font-normal leading-none text-muted-foreground">
                     Pacientes na Fila
                   </h2>
-                  <Button disabled={!patientsWaiting[0]?.id} onClick={() => void navigate(routes.ATTENDANCE.replace(":attendanceId", patientsWaiting[0]?.id ?? ""))}>
-                    Iniciar atendimento
+                  <Button
+                    disabled={isCallingNext || !patientsWaiting.length}
+                    onClick={() => {
+                      callNextMutate();
+                    }}
+                  >
+                    {isCallingNext ? <Spinner /> : "Iniciar atendimento"}
                   </Button>
                 </div>
 
