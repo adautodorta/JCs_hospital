@@ -5,31 +5,26 @@ from app.core.config import supabase
 
 class AttendanceService:
     def __init__(self):
-        self.current = supabase.table("CURRENT_ATTENDANCE")
         self.records = supabase.table("RECORD_MEDICAL")
         self.queue = supabase.table("QUEUE")
 
     def get_current_attendance(self, doctor_id: str):
         response = (
-            self.current
+            self.queue
             .select("*")
-            .eq("doctor_id", doctor_id)
+            .eq("assigned_doctor_id", doctor_id)
+            .in_("status", ["being_attended"])
             .execute()
         )
 
-        return response.data[0] if response.data else None
+        entry = response.data[0] if response.data else None
 
-    def start_attendance(self, doctor_id: str, patient_id: str):
-        now_fortaleza = datetime.now(ZoneInfo("America/Fortaleza")).isoformat()
+        if entry:
+            self.queue.update({"status": "being_attended"}) \
+                .eq("id", entry["id"]) \
+                .execute()
 
-        insert_data = {
-            "doctor_id": doctor_id,
-            "patient_id": patient_id,
-            "started_at": now_fortaleza
-        }
-
-        response = self.current.insert(insert_data).execute()
-        return response.data[0]
+        return entry
 
     def finish_attendance(
         self,
@@ -39,18 +34,26 @@ class AttendanceService:
         assessment: str,
         planning: str
     ):
-        current = self.get_current_attendance(doctor_id)
+        response = (
+            self.queue
+            .select("*")
+            .eq("assigned_doctor_id", doctor_id)
+            .eq("status", "being_attended")
+            .execute()
+        )
+
+        current = response.data[0] if response.data else None
 
         if not current:
             raise ValueError("Nenhum atendimento ativo encontrado.")
 
-        now_fortaleza = datetime.now(ZoneInfo("America/Fortaleza")).isoformat()
+        now = datetime.now(ZoneInfo("America/Fortaleza")).isoformat()
 
         record_data = {
-            "doctor_id": current["doctor_id"],
-            "patient_id": current["patient_id"],
-            "started_at": current["started_at"],
-            "end_at": now_fortaleza,
+            "doctor_id": doctor_id,
+            "patient_id": current["profile_id"],
+            "started_at": current["checkin"],
+            "end_at": now,
             "subjective": subjective,
             "objective_data": objective_data,
             "assessment": assessment,
@@ -58,8 +61,9 @@ class AttendanceService:
         }
 
         record = self.records.insert(record_data).execute().data[0]
-        self.queue.delete().eq("profile_id", current["patient_id"]).execute()
-        self.current.delete().eq("doctor_id", doctor_id).execute()
+
+        self.queue.delete().eq("id", current["id"]).execute()
+
         return record
 
 

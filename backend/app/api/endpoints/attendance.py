@@ -30,21 +30,6 @@ def get_current_attendance(user_id: str = Depends(get_current_user)):
             detail=str(e)
         )
 
-@router.post("/start")
-def start_attendance(patient_id: str, user_id: str = Depends(get_current_user)):
-    try:
-        started = attendance_service.start_attendance(
-            doctor_id=user_id,
-            patient_id=patient_id
-        )
-        return started
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
-
 @router.post("/finish")
 def finish_attendance(
     data: FinishAttendanceSchema,
