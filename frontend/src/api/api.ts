@@ -163,6 +163,14 @@ export const RecordsAPI = {
 
     return (await response.json()) as RecordsSummaryProps[];
   },
+
+  getRecordById: async (recordId: string): Promise<RecordsSummaryProps> => {
+    const response = await apiFetch(`${config.baseUrl}/records/${recordId}`, {
+      method: "GET",
+    });
+
+    return (await response.json()) as RecordsSummaryProps;
+  },
 };
 
 export const AttendanceAPI = {

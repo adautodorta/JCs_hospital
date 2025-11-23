@@ -7,6 +7,7 @@ import {Dashboard} from "./pages/Dashboard/Dashboard";
 import {Login} from "./pages/Login/Login";
 import {PatientResume} from "./pages/PatientResume/PatientResume";
 import {Patients} from "./pages/Patients/Patients";
+import {RecordResume} from "./pages/RecordResume/RecordResume";
 import {Register} from "./pages/Register/Register";
 import QueryProvider from "./utils/queryProvider";
 import routes from "./utils/routes";
@@ -22,6 +23,7 @@ function App() {
           <Route path={routes.PATIENTS} element={<Patients />} />
           <Route path={routes.PATIENT} element={<PatientResume />} />
           <Route path={routes.ATTENDANCE} element={<Attendance />} />
+          <Route path={routes.RECORD} element={<RecordResume />} />
         </Route>
         <Route path="*" element={<Navigate to={routes.LOGIN} replace />} />
       </Routes>

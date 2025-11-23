@@ -5,6 +5,7 @@ const routes = {
   PATIENTS: "/patients",
   PATIENT: "/patients/:patientId",
   ATTENDANCE: "/attendance",
+  RECORD: "/record/:recordId",
 };
 
 export default routes;

@@ -76,7 +76,9 @@ export const PatientResumeContent = () => {
                     </div>
                   </TabsContent>
                   <TabsContent value="records">
-                    <RecordsList patientId={patientId ?? ""} />
+                    <div className="w-full mb-24">
+                      <RecordsList patientId={patientId ?? ""} />
+                    </div>
                   </TabsContent>
                 </Tabs>
               </>

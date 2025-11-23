@@ -1,7 +1,6 @@
 import {AdminDashboard} from "./Admin/Admin";
 import {DoctorDashboard} from "./Doctor/Doctor";
 import {PatientDashboard} from "./Patient/Patient";
-import {ReceptionistDashboard} from "./Receptionist/Receptionist";
 
 import {AppSidebar} from "@/components/custom/AppSidebar";
 import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
@@ -23,8 +22,6 @@ export const Dashboard = () => {
           </main>
         </SidebarProvider>
       );
-    case "receptionist":
-      return <ReceptionistDashboard />;
     case "admin":
       return <AdminDashboard />;
     default:

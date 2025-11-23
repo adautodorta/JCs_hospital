@@ -22,7 +22,7 @@ export const DoctorDashboard = () => {
   const {data: allProfiles} = useQuery({
     queryKey: ["all-profiles"],
     queryFn: ProfilesAPI.getAllProfiles,
-    refetchInterval: 60000,
+    refetchInterval: 10000,
   });
 
   const {data: allQueue} = useQuery({
@@ -34,7 +34,7 @@ export const DoctorDashboard = () => {
   const {data: allRecords} = useQuery({
     queryKey: ["all-records"],
     queryFn: RecordsAPI.getAllRecords,
-    refetchInterval: 60000,
+    refetchInterval: 10000,
   });
 
   const {mutate: callNextMutate, isPending: isCallingNext} = useMutation({
@@ -52,7 +52,13 @@ export const DoctorDashboard = () => {
   });
 
   const patients = allProfiles?.filter(p => p.role === "patient") ?? [];
-  const patientsWaiting = allQueue ?? [];
+
+  const patientsWaiting
+    = allQueue?.filter(item => item.status === "waiting") ?? [];
+
+  const patientsAttendances
+    = allQueue?.filter(item => item.status === "being_attended") ?? [];
+
   const patientsToday
     = allRecords?.filter((record) => {
       if (!record.started_at) {
@@ -116,6 +122,13 @@ export const DoctorDashboard = () => {
                     iconName="TimerIcon"
                     iconBgColor="bg-orange-100"
                     iconTextColor="text-orange-600"
+                  />
+                  <CardInfoGlobal
+                    title="Em atendimento"
+                    total={patientsAttendances.length}
+                    iconName="Stethoscope"
+                    iconBgColor="bg-blue-100"
+                    iconTextColor="text-blue-600"
                   />
                   <CardInfoGlobal
                     title="Pacientes hoje"

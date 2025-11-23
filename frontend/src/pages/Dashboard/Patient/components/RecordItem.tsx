@@ -2,6 +2,7 @@ import {
   HospitalIcon,
 } from "lucide-react";
 import {useMemo} from "react";
+import {useNavigate} from "react-router";
 
 import type {RecordsSummaryProps} from "@/api/api";
 import {cn} from "@/lib/utils";
@@ -21,6 +22,8 @@ interface RecordConfig {
 }
 
 export const RecordItem = ({record}: RecordItemProps) => {
+  const navigate = useNavigate();
+
   const {
     title,
     subtitle,
@@ -51,6 +54,7 @@ export const RecordItem = ({record}: RecordItemProps) => {
 
   return (
     <div
+      onClick={() => void navigate(`/record/${String(record.id)}`)}
       className={cn(
         "flex flex-row items-center w-full py-3 lg:px-4 cursor-pointer transition-colors rounded-lg",
         "hover:bg-muted/70",

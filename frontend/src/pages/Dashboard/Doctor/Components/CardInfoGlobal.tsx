@@ -3,6 +3,7 @@ import {
   Users,
   TrendingUp,
   type LucideIcon,
+  Stethoscope,
 } from "lucide-react";
 
 import {Card} from "@/components/ui/card";
@@ -11,6 +12,7 @@ const iconMap = {
   Users,
   TimerIcon,
   TrendingUp,
+  Stethoscope,
 } as const;
 
 type IconName = keyof typeof iconMap;

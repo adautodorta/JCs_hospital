@@ -1,3 +1,4 @@
+import type {ProfilesSummary} from "@/api/api";
 import {InfoMessage} from "@/components/custom/InfoMessage";
 
 interface CardQueueProps {
@@ -6,27 +7,33 @@ interface CardQueueProps {
     checkin?: string;
     profile_id?: string;
   }[];
-  profiles: {
-    id: string;
-    full_name: string;
-  }[];
+  profiles: ProfilesSummary[];
 }
 
 export const CardQueue = ({queue, profiles}: CardQueueProps) => {
-  const queueWithNames = queue.map((item) => {
-    const patient = profiles.find(p => p.id === item.profile_id);
-    return {
-      ...item,
-      name: patient?.full_name ?? "Paciente",
-    };
-  });
+  const queueWithNames = queue
+    .map((item) => {
+      const patient = profiles.find(p => p.id === item.profile_id);
+      return {
+        ...item,
+        name: patient?.full_name ?? "Paciente",
+        priority: patient?.priority ?? false,
+      };
+    })
+    .sort((a, b) => {
+      if (a.priority !== b.priority) {
+        return a.priority ? -1 : 1;
+      }
+
+      return new Date(a.checkin ?? 0).getTime() - new Date(b.checkin ?? 0).getTime();
+    });
 
   if (queueWithNames.length === 0) {
     return <InfoMessage message="Nenhum paciente aguardando." />;
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full mb-24">
       {queueWithNames.map((item, index) => (
         <div
           key={item.id ?? index}

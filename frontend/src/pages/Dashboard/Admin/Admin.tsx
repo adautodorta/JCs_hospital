@@ -10,8 +10,8 @@ import {Spinner} from "@/components/ui/spinner";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {supabase} from "@/supabaseClient";
 
-type Role = "patient" | "doctor" | "receptionist" | "admin";
-const ROLES: Role[] = ["patient", "doctor", "receptionist", "admin"];
+type Role = "patient" | "doctor" | "admin";
+const ROLES: Role[] = ["patient", "doctor", "admin"];
 
 interface Profile {
   id: string;

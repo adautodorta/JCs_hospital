@@ -1,4 +1,4 @@
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import {
   Activity,
   ClipboardList,
@@ -6,12 +6,16 @@ import {
   Save,
   User,
   FileText,
+  InfoIcon,
 } from "lucide-react";
 import {useState} from "react";
 import {useNavigate} from "react-router";
 import {toast} from "sonner";
 
-import {AttendanceAPI} from "@/api/api";
+import {RecordsList} from "../PatientResume/components/RecordList";
+
+import {AttendanceAPI, ProfilesAPI, QueueAPI} from "@/api/api";
+import {CardInfoPatient} from "@/components/custom/CardInfoPatient";
 import {Button} from "@/components/ui/button";
 import {
   Card,
@@ -21,8 +25,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {Label} from "@/components/ui/label";
+import {Separator} from "@/components/ui/separator";
+import {Skeleton} from "@/components/ui/skeleton";
 import {Spinner} from "@/components/ui/spinner";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Textarea} from "@/components/ui/textarea";
+import {formatCPF} from "@/utils/functions";
 import routes from "@/utils/routes";
 
 export const AttendanceContent = () => {
@@ -31,6 +39,23 @@ export const AttendanceContent = () => {
   const [objective, setObjective] = useState("");
   const [assessment, setAssessment] = useState("");
   const [planning, setPlanning] = useState("");
+
+  const {data: me} = useQuery({
+    queryKey: ["info-doctor"],
+    queryFn: ProfilesAPI.getInfoMe,
+  });
+  const {data: queue} = useQuery({
+    queryKey: ["all-queue"],
+    queryFn: QueueAPI.getAllQueue,
+    refetchInterval: 10000,
+  });
+  const currentPatientId = queue?.find(q => q.assigned_doctor_id === me?.id)?.profile_id;
+
+  const {data: patient, isLoading} = useQuery({
+    queryKey: ["profile", currentPatientId],
+    queryFn: () => ProfilesAPI.getProfileById(currentPatientId ?? ""),
+    enabled: !!currentPatientId,
+  });
 
   const {mutate: finishMutate, isPending} = useMutation({
     mutationFn: async (data: {
@@ -69,6 +94,69 @@ export const AttendanceContent = () => {
   return (
     <div className="px-6 w-full flex justify-center mt-7 lg:items-center">
       <div className="w-full max-w-[369px] flex flex-col items-start lg:max-w-[954px]">
+        <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2 mb-7">
+          <InfoIcon className="text-primary" />
+          Informações do Paciente
+        </h2>
+        {!patient
+          ? (
+              <div className="w-full flex flex-row gap-4">
+                <Skeleton className="w-12 h-12 rounded-full" />
+
+                <div className="flex flex-col gap-2">
+                  <Skeleton className="h-6 w-48 rounded" />
+                  <Skeleton className="h-4 w-32 rounded" />
+                </div>
+              </div>
+            )
+          : (
+              <div className="w-full flex flex-row gap-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-semibold">
+                    {patient.full_name
+                      .split(" ")
+                      .map(n => n[0])
+                      .slice(0, 2)
+                      .join("")}
+                  </span>
+                </div>
+
+                <div className="flex flex-col">
+                  <h2 className="text-xl font-medium self-start">
+                    {patient.full_name}
+                  </h2>
+                  <span>
+                    CPF:
+                    {" "}
+                    {formatCPF(patient.document_number)}
+                  </span>
+                </div>
+              </div>
+            )}
+
+        <Tabs className="mt-7 w-full" defaultValue="account">
+          <TabsList className="gap-1 rounded-full">
+            <TabsTrigger value="account" className="flex gap-4 rounded-full">
+              <User />
+              Dados Pessoais
+            </TabsTrigger>
+            <TabsTrigger value="records" className="flex gap-4">
+              <Activity />
+              Histórico Médico
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="account">
+            <div className="w-full">
+              <CardInfoPatient data={patient} isPending={isLoading} />
+            </div>
+          </TabsContent>
+          <TabsContent value="records">
+            <RecordsList patientId={patient?.id ?? ""} />
+          </TabsContent>
+        </Tabs>
+
+        <Separator className="mt-7 mb-7" />
+
         <div className="flex w-full justify-between mb-7 flex-col lg:flex-row">
           <div>
             <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">

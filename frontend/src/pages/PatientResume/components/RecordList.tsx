@@ -45,7 +45,7 @@ export function RecordsList({patientId }: {patientId: string}) {
   );
 
   return (
-    <div className="flex flex-col gap-6 mt-4 mb-24">
+    <div className="flex flex-col gap-6 mt-4">
       {sortedRecords.map(record => (
         <div key={record.id} className="border rounded-xl p-6 shadow-none bg-white">
           <div className="flex items-center gap-3 mb-2">
