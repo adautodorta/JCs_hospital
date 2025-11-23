@@ -6,6 +6,7 @@ import {toast} from "sonner";
 
 import LogoHospital from "./../../assets/LOGO JCS.webp";
 
+import {DateOfBirthInput} from "@/components/custom/DateOfBirthInput";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
@@ -155,14 +156,9 @@ export function Register() {
 
           <div className="grid gap-2">
             <Label htmlFor="dateOfBirth">Data de nascimento</Label>
-            <Input
-              id="dateOfBirth"
-              type="date"
+            <DateOfBirthInput
               value={dateOfBirth}
-              required
-              onChange={(e) => {
-                setDateOfBirth(e.target.value);
-              }}
+              onChange={setDateOfBirth}
               disabled={isRegisterPending}
             />
           </div>

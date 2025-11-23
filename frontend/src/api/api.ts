@@ -166,13 +166,13 @@ export const RecordsAPI = {
 };
 
 export const AttendanceAPI = {
-  finish: async (attendanceId: string, payload: {
+  finish: async (payload: {
     subjective: string;
     objective_data: string;
     assessment: string;
     planning: string;
   }): Promise<RecordsSummaryProps> => {
-    const response = await apiFetch(`${config.baseUrl}/attendance/finish/${attendanceId}`, {
+    const response = await apiFetch(`${config.baseUrl}/attendance/finish`, {
       method: "POST",
       body: JSON.stringify(payload),
     });

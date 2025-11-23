@@ -8,7 +8,7 @@ import {
   FileText,
 } from "lucide-react";
 import {useState} from "react";
-import {useParams} from "react-router";
+import {useNavigate} from "react-router";
 import {toast} from "sonner";
 
 import {AttendanceAPI} from "@/api/api";
@@ -23,10 +23,10 @@ import {
 import {Label} from "@/components/ui/label";
 import {Spinner} from "@/components/ui/spinner";
 import {Textarea} from "@/components/ui/textarea";
+import routes from "@/utils/routes";
 
 export const AttendanceContent = () => {
-  const {attendanceId} = useParams<{attendanceId: string}>();
-
+  const navigate = useNavigate();
   const [subjective, setSubjective] = useState("");
   const [objective, setObjective] = useState("");
   const [assessment, setAssessment] = useState("");
@@ -39,11 +39,7 @@ export const AttendanceContent = () => {
       assessment: string;
       planning: string;
     }) => {
-      if (!attendanceId) {
-        throw new Error("attendanceId não encontrado na URL.");
-      }
-
-      return AttendanceAPI.finish(attendanceId, data);
+      return AttendanceAPI.finish(data);
     },
 
     onSuccess: () => {
@@ -52,6 +48,7 @@ export const AttendanceContent = () => {
       setObjective("");
       setAssessment("");
       setPlanning("");
+      void navigate(routes.DASHBOARD);
     },
     onError: () => {
       toast.error("Erro ao finalizar atendimento.");

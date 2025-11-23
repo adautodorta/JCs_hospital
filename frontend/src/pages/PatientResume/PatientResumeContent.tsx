@@ -1,16 +1,19 @@
 import {useQuery} from "@tanstack/react-query";
-import {Activity, User} from "lucide-react";
-import {useParams} from "react-router";
+import {Activity, ArrowLeft, User} from "lucide-react";
+import {useNavigate, useParams} from "react-router";
 
 import {RecordsList} from "./components/RecordList";
 import {CardInfoPatient} from "../../components/custom/CardInfoPatient";
 
 import {ProfilesAPI} from "@/api/api";
+import {Button} from "@/components/ui/button";
 import {Spinner} from "@/components/ui/spinner";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {formatCPF} from "@/utils/functions";
+import routes from "@/utils/routes";
 
 export const PatientResumeContent = () => {
+  const navigate = useNavigate();
   const {patientId} = useParams<{patientId: string}>();
 
   const {data: patient, isLoading} = useQuery({
@@ -30,6 +33,10 @@ export const PatientResumeContent = () => {
             )
           : (
               <>
+                <Button variant="ghost" className="p-0 hover:bg-transparent cursor-pointer w-15 mb-4" onClick={() => void navigate(routes.PATIENTS)}>
+                  <ArrowLeft />
+                  Voltar
+                </Button>
                 <div className="w-full flex flex-row gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 font-semibold">
@@ -64,7 +71,9 @@ export const PatientResumeContent = () => {
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="account">
-                    <CardInfoPatient data={patient} isPending={isLoading} />
+                    <div className="w-full mb-24">
+                      <CardInfoPatient data={patient} isPending={isLoading} />
+                    </div>
                   </TabsContent>
                   <TabsContent value="records">
                     <RecordsList patientId={patientId ?? ""} />

@@ -28,7 +28,7 @@ export const DoctorDashboard = () => {
   const {data: allQueue} = useQuery({
     queryKey: ["all-queue"],
     queryFn: QueueAPI.getAllQueue,
-    refetchInterval: 60000,
+    refetchInterval: 10000,
   });
 
   const {data: allRecords} = useQuery({
@@ -47,9 +47,7 @@ export const DoctorDashboard = () => {
         return;
       }
 
-      void navigate(
-        routes.ATTENDANCE.replace(":attendanceId", attendanceId),
-      );
+      void navigate(routes.ATTENDANCE);
     },
   });
 
