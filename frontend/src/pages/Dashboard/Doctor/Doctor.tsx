@@ -37,6 +37,10 @@ export const DoctorDashboard = () => {
     refetchInterval: 10000,
   });
 
+  const currentAttendance = allQueue?.find(
+    item => item.status === "being_attended" && item.assigned_doctor_id === data?.id,
+  );
+
   const {mutate: callNextMutate, isPending: isCallingNext} = useMutation({
     mutationFn: QueueAPI.callNext,
     onSuccess: (resp) => {
@@ -146,12 +150,16 @@ export const DoctorDashboard = () => {
                     Pacientes na Fila
                   </h2>
                   <Button
-                    disabled={isCallingNext || !patientsWaiting.length}
+                    disabled={isCallingNext || (!patientsWaiting.length && !currentAttendance)}
                     onClick={() => {
+                      if (currentAttendance) {
+                        void navigate(routes.ATTENDANCE);
+                        return;
+                      }
                       callNextMutate();
                     }}
                   >
-                    {isCallingNext ? <Spinner /> : "Iniciar atendimento"}
+                    {isCallingNext ? <Spinner /> : currentAttendance ? "Continuar atendimento" : "Iniciar atendimento"}
                   </Button>
                 </div>
 

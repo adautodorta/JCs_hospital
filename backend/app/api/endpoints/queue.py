@@ -64,14 +64,20 @@ def get_my_position(user_id: str = Depends(get_current_user)):
 @router.post("/next")
 def call_next(doctor_id: str = Depends(get_current_user)):
     try:
-        called = queue_service.advance_queue(doctor_id)
+        result = queue_service.advance_queue(doctor_id)
 
-        if not called:
+        if not result:
             return {"message": "A fila está vazia."}
+
+        if result.get("already_attending"):
+            return {
+                "message": "Você já possui um paciente em atendimento.",
+                "called": result["patient"]
+            }
 
         return {
             "message": "Próximo paciente chamado.",
-            "called": called
+            "called": result["patient"]
         }
 
     except Exception as e:

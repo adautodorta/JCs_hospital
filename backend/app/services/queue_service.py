@@ -83,6 +83,22 @@ class QueueService:
         return len(data) > 0
     
     def advance_queue(self, doctor_id: str):
+        attending_res = (
+            self.table
+            .select("*")
+            .eq("assigned_doctor_id", doctor_id)
+            .eq("status", "being_attended")
+            .execute()
+        )
+
+        attending = attending_res.data or []
+
+        if attending:
+            return {
+                "already_attending": True,
+                "patient": attending[0]
+            }
+
         queue_res = (
             self.table
             .select("*")
@@ -119,15 +135,13 @@ class QueueService:
         ordered_queue = priorities + normals
 
         first = ordered_queue[0]
-        patient_id = first["profile_id"]
 
-        # altera paciente para "being_attended"
         supabase.table("QUEUE").update({
             "status": "being_attended",
             "assigned_doctor_id": doctor_id
         }).eq("id", first["id"]).execute()
 
-        return first
+        return {"already_attending": False, "patient": first}
 
         
 queue_service = QueueService()
