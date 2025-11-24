@@ -84,7 +84,7 @@ export function RecordsList({patientId }: {patientId: string}) {
           </div>
 
           <div className="mt-4 p-4 bg-blue-50 rounded-xl flex gap-2">
-            <Pill className="text-blue-600" size={20} />
+            <Pill className="text-blue-600 shrink-0" size={20} />
             <div>
               <p className="font-medium">Prescrição</p>
               <p className="text-blue-700">{record.planning}</p>

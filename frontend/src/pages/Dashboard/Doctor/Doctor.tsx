@@ -45,6 +45,7 @@ export const DoctorDashboard = () => {
     mutationFn: QueueAPI.callNext,
     onSuccess: (resp) => {
       const attendanceId = resp.called?.id;
+      localStorage.setItem("current-attendance-id", attendanceId ?? "");
 
       if (!attendanceId) {
         console.error("Erro: id do atendimento não veio na resposta");

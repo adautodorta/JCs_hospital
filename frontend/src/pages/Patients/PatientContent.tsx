@@ -64,7 +64,7 @@ export const PatientContent = () => {
               </div>
             )
           : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full mb-24">
 
                 {filteredPatients.length === 0 && (
                   <p className="text-sm text-muted-foreground pl-1">

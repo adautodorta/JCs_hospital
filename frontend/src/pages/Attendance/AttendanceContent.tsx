@@ -8,7 +8,7 @@ import {
   FileText,
   InfoIcon,
 } from "lucide-react";
-import {useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useNavigate} from "react-router";
 import {toast} from "sonner";
 
@@ -33,23 +33,42 @@ import {Textarea} from "@/components/ui/textarea";
 import {formatCPF} from "@/utils/functions";
 import routes from "@/utils/routes";
 
+interface SoapDraft {
+  subjective: string;
+  objective: string;
+  assessment: string;
+  planning: string;
+}
+
 export const AttendanceContent = () => {
   const navigate = useNavigate();
+
   const [subjective, setSubjective] = useState("");
   const [objective, setObjective] = useState("");
   const [assessment, setAssessment] = useState("");
   const [planning, setPlanning] = useState("");
 
+  const [attendanceId] = useState<string | null>(
+    localStorage.getItem("current-attendance-id"),
+  );
+
   const {data: me} = useQuery({
     queryKey: ["info-doctor"],
     queryFn: ProfilesAPI.getInfoMe,
   });
+
   const {data: queue} = useQuery({
     queryKey: ["all-queue"],
     queryFn: QueueAPI.getAllQueue,
     refetchInterval: 10000,
   });
-  const currentPatientId = queue?.find(q => q.assigned_doctor_id === me?.id)?.profile_id;
+
+  const currentPatientId = useMemo(() => {
+    const item = queue?.find(
+      q => q.assigned_doctor_id === me?.id && q.id === attendanceId,
+    );
+    return item?.profile_id ?? null;
+  }, [queue, me?.id, attendanceId]);
 
   const {data: patient, isLoading} = useQuery({
     queryKey: ["profile", currentPatientId],
@@ -69,10 +88,17 @@ export const AttendanceContent = () => {
 
     onSuccess: () => {
       toast.success("Atendimento finalizado com sucesso!");
+
+      if (attendanceId) {
+        localStorage.removeItem(`soap-draft-${attendanceId}`);
+        localStorage.removeItem("current-attendance-id");
+      }
+
       setSubjective("");
       setObjective("");
       setAssessment("");
       setPlanning("");
+
       void navigate(routes.DASHBOARD);
     },
     onError: () => {
@@ -90,6 +116,51 @@ export const AttendanceContent = () => {
       planning,
     });
   };
+
+  useEffect(() => {
+    if (!attendanceId) {
+      return;
+    }
+
+    try {
+      const saved = localStorage.getItem(`soap-draft-${attendanceId}`);
+      if (!saved) {
+        return;
+      }
+
+      const parsed = JSON.parse(saved) as Partial<SoapDraft>;
+
+      if (parsed.subjective) {
+        setSubjective(parsed.subjective);
+      }
+      if (parsed.objective) {
+        setObjective(parsed.objective);
+      }
+      if (parsed.assessment) {
+        setAssessment(parsed.assessment);
+      }
+      if (parsed.planning) {
+        setPlanning(parsed.planning);
+      }
+    } catch (err) {
+      console.error("Erro ao restaurar rascunho SOAP:", err);
+    }
+  }, [attendanceId]);
+
+  useEffect(() => {
+    if (!attendanceId) {
+      return;
+    }
+
+    const draft: SoapDraft = {
+      subjective,
+      objective,
+      assessment,
+      planning,
+    };
+
+    localStorage.setItem(`soap-draft-${attendanceId}`, JSON.stringify(draft));
+  }, [attendanceId, subjective, objective, assessment, planning]);
 
   return (
     <div className="px-6 w-full flex justify-center mt-7 lg:items-center">
