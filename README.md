@@ -66,6 +66,18 @@ Este projeto está vinculado ao **Objetivo de Desenvolvimento Sustentável 11: C
 - ✅ **Detalhamento de Registros**: Acessar informações completas de cada atendimento
 - ✅ **Cadastro e Login**: Criar conta e fazer login seguro
 
+#### Tela de Login
+![Tela de Login](screenshots/login.jpeg)
+*Interface de login do sistema*
+
+#### Dashboard do Paciente
+![Dashboard do Paciente](screenshots/homepatient.jpeg)
+*Painel do paciente com opção de check-in e histórico*
+
+#### Tela de Atendimento
+![Tela de Atendimento](screenshots/detailtrecord.jpeg)
+*Tela de resumo de atendimento*
+
 ### Para Médicos 👨‍⚕️
 
 - ✅ **Visualização da Fila**: Ver todos os pacientes aguardando atendimento
@@ -78,6 +90,22 @@ Este projeto está vinculado ao **Objetivo de Desenvolvimento Sustentável 11: C
   - **Planning**: Plano de tratamento
 - ✅ **Histórico de Pacientes**: Consultar histórico completo de qualquer paciente
 - ✅ **Finalização de Atendimento**: Finalizar atendimento e criar registro médico
+
+#### Dashboard do Médico
+![Dashboard do Médico](screenshots/dashboard.jpeg)
+*Painel do médico com fila de atendimento*
+
+#### Tela de Atendimento
+![Tela de Atendimento](screenshots/infopatient.jpeg)
+*Interface para registro de prontuário médico (SOAP)*
+
+#### Lista de pacientes
+![Histórico](screenshots/listpatients.jpeg)
+*Lista de pacientes cadastrados no sistema do hospital*
+
+#### Histórico de atendimentos sobre paciente
+![Histórico](screenshots/infohistorypati.jpeg)
+*Visualização do histórico completo de atendimentos*
 
 ### Para Administradores 👨‍💼
 
@@ -218,7 +246,7 @@ cp example.env .env
 
 ```bash
 # Volte para a raiz e entre na pasta do frontend
-cd ../frontend
+cd ../frontend/web
 
 # Instale as dependências
 yarn install
@@ -266,7 +294,7 @@ Documentação interativa (Swagger): `http://localhost:8000/docs`
 #### Frontend
 
 ```bash
-cd frontend
+cd frontend/web
 
 # Execute o servidor de desenvolvimento
 yarn dev
@@ -308,13 +336,25 @@ yarn test
 
 ## 🔐 Acesso ao Sistema
 
+### URL de Acesso em Produção
+
+O sistema está disponível em produção através do seguinte link:
+
+**🔗 [Acessar Sistema em Produção](https://jcshospital-production.up.railway.app/login)**
+
 ### Credenciais de Teste
 
-⚠️ **Nota**: As credenciais de teste devem ser configuradas no ambiente Supabase. Para criar usuários de teste:
+O sistema possui usuários de teste pré-configurados para avaliação:
 
-1. Acesse o painel do Supabase
-2. Vá em Authentication → Users
-3. Crie usuários manualmente ou use o painel admin do sistema
+#### Credenciais de Paciente
+- **Email**: `pacienteteste@gmail.com`
+- **Senha**: `pacienteteste123`
+- **Perfil**: Paciente
+
+#### Credenciais de Médico
+- **Email**: `medicoteste@gmail.com`
+- **Senha**: `medicoteste123`
+- **Perfil**: Médico
 
 ### Perfis de Usuário
 
@@ -326,6 +366,10 @@ O sistema possui três perfis:
 
 ### URLs de Acesso
 
+#### Produção
+- **Frontend (Produção)**: [https://jcshospital-production.up.railway.app/login](https://jcshospital-production.up.railway.app/login)
+
+#### Desenvolvimento Local
 - **Frontend (Desenvolvimento)**: `http://localhost:5173`
 - **Backend API**: `http://localhost:8000`
 - **Documentação da API**: `http://localhost:8000/docs`
@@ -333,11 +377,13 @@ O sistema possui três perfis:
 
 ### Deploy em Produção
 
-O sistema está preparado para deploy em produção:
+O sistema está deployado e funcionando em produção:
 
-- **Frontend**: Pode ser deployado em Vercel, Netlify ou similar
-- **Backend**: Pode ser deployado em Heroku, Railway, Render ou similar
+- **Frontend**: Deployado no Railway
+- **Backend**: Deployado no Railway
 - **Banco de Dados**: Gerenciado pelo Supabase (já em produção)
+
+Foi preferível fazer deploy no railway e banco de dados supabase por conta da facilidade em administrar tudo em um mesmo lugar. Essa mudança ocorreu da 1 etapa para a 2 quando antes havia planejado fazer o front na vercel e backend no heroku... Conhecendo o Railway posteriormente, foi preferível e vantajoso realizarmos a migração dos serviços de nuvem para aplicação em produção.
 
 ---
 
@@ -430,13 +476,14 @@ Para mais detalhes sobre a validação, consulte:
 │   ├── evidence/                # Evidências fotográficas
 │   └── feedbacks/               # Feedbacks coletados
 ├── frontend/                    # Código do frontend
-│   ├── src/
-│   │   ├── pages/              # Páginas da aplicação
-│   │   ├── components/         # Componentes React
-│   │   ├── api/                # Cliente API
-│   │   └── utils/              # Utilitários
-│   ├── public/
-│   └── package.json
+│   └── web/                     # Implementação web
+│       ├── src/
+│       │   ├── pages/          # Páginas da aplicação
+│       │   ├── components/     # Componentes React
+│       │   ├── api/            # Cliente API
+│       │   └── utils/          # Utilitários
+│       ├── public/
+│       └── package.json
 ├── backend/                     # Código do backend
 │   ├── app/
 │   │   ├── api/                # Endpoints

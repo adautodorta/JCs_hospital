@@ -40,14 +40,35 @@ interface SoapDraft {
   planning: string;
 }
 
+/**
+ * Componente de Atendimento Médico
+ * 
+ * Implementa a interface para registro de atendimentos usando metodologia SOAP.
+ * 
+ * Metodologia SOAP:
+ * - Subjective: Dados subjetivos (queixas, histórico relatado pelo paciente)
+ * - Objective: Dados objetivos (sinais vitais, exames, observações clínicas)
+ * - Assessment: Avaliação e diagnóstico
+ * - Planning: Plano de tratamento e recomendações
+ * 
+ * Regras de Negócio:
+ * 1. Apenas médicos podem acessar este componente
+ * 2. Médico pode ter apenas um atendimento ativo por vez
+ * 3. Dados são salvos automaticamente em rascunho no localStorage
+ * 4. Ao finalizar, cria registro médico permanente e remove paciente da fila
+ */
 export const AttendanceContent = () => {
   const navigate = useNavigate();
 
+  // Estados para os campos SOAP
+  // Regra: Todos os campos são obrigatórios para finalizar atendimento
   const [subjective, setSubjective] = useState("");
   const [objective, setObjective] = useState("");
   const [assessment, setAssessment] = useState("");
   const [planning, setPlanning] = useState("");
 
+  // ID do atendimento atual armazenado no localStorage
+  // Permite recuperar rascunho mesmo após recarregar a página
   const [attendanceId] = useState<string | null>(
     localStorage.getItem("current-attendance-id"),
   );
@@ -76,6 +97,21 @@ export const AttendanceContent = () => {
     enabled: !!currentPatientId,
   });
 
+  /**
+   * Mutation para finalizar atendimento
+   * 
+   * Regras de Negócio (CRÍTICAS):
+   * 1. Cria registro médico permanente no banco de dados
+   * 2. Remove paciente da fila após criar o registro
+   * 3. Limpa rascunho do localStorage
+   * 4. Redireciona para dashboard após sucesso
+   * 
+   * Processo:
+   * 1. Envia dados SOAP para backend
+   * 2. Backend valida se há atendimento ativo
+   * 3. Backend cria registro médico e remove da fila
+   * 4. Frontend limpa dados locais e navega
+   */
   const {mutate: finishMutate, isPending} = useMutation({
     mutationFn: async (data: {
       subjective: string;
@@ -89,16 +125,20 @@ export const AttendanceContent = () => {
     onSuccess: () => {
       toast.success("Atendimento finalizado com sucesso!");
 
+      // Limpa rascunho do localStorage após finalizar
+      // Regra: Rascunho não é mais necessário após criar registro permanente
       if (attendanceId) {
         localStorage.removeItem(`soap-draft-${attendanceId}`);
         localStorage.removeItem("current-attendance-id");
       }
 
+      // Limpa campos do formulário
       setSubjective("");
       setObjective("");
       setAssessment("");
       setPlanning("");
 
+      // Redireciona para dashboard
       void navigate(routes.DASHBOARD);
     },
     onError: () => {
@@ -117,17 +157,25 @@ export const AttendanceContent = () => {
     });
   };
 
+  /**
+   * Effect para recuperar rascunho do localStorage
+   * 
+   * Regra: Permite que médico continue preenchendo formulário mesmo após recarregar página
+   * Rascunho é salvo automaticamente enquanto médico digita
+   */
   useEffect(() => {
     if (!attendanceId) {
       return;
     }
 
     try {
+      // Busca rascunho salvo no localStorage
       const saved = localStorage.getItem(`soap-draft-${attendanceId}`);
       if (!saved) {
         return;
       }
 
+      // Restaura campos do formulário com dados do rascunho
       const parsed = JSON.parse(saved) as Partial<SoapDraft>;
 
       if (parsed.subjective) {
