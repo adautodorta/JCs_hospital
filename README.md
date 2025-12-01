@@ -523,7 +523,7 @@ Para mais detalhes sobre a validação, consulte:
 
 ### Membros da Equipe
 
-**Adauto Dorta** (Desenvolvedor Full Stack)
+**Francisco Adauto Canuto Dorta Filho, 2415544** (Desenvolvedor Full Stack)
 - Desenvolvimento do frontend (React + TypeScript)
 - Desenvolvimento do backend (FastAPI + Python)
 - Integração com Supabase
